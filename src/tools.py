@@ -33,17 +33,21 @@ class Tools:
             raise ValueError("Product not found")
         return prod.iloc[0].to_dict()
 
-    def get_conversations(self, customer_id: str) -> Dict[str, Any]:
-        # For simplicity, returning all from json where ticket belongs to customer
-        df = self.datasets["support_tickets"]
-        tickets = df[df["customer_id"] == customer_id]["ticket_id"].tolist()
-        
-        convos = [c for c in self.datasets["conversations"] if c.get("ticket_id") in tickets]
-        return {"conversations": convos}
+    def get_conversations(self, customer_id: str, order_id: str = None, ticket_id: str = None) -> Dict[str, Any]:
+        # Fix: Search conversations by customer_id directly rather than assuming ticket match
+        convos = self.datasets.get("conversations", [])
+        matched = []
+        for c in convos:
+            if c.get("customer_id") == customer_id:
+                if order_id and c.get("order_id") != order_id:
+                    continue
+                if ticket_id and c.get("ticket_id") != ticket_id:
+                    continue
+                matched.append(c)
+        return {"conversations": matched}
 
     def check_refund_eligibility(self, customer_id: str, order_id: str, current_date: str) -> Dict[str, Any]:
         order = self.get_order(customer_id, order_id)
-        # simplistic eligibility check
         eligible, policy = self.policy_engine.is_eligible_for_return(order["order_date"], current_date)
         return {
             "eligible": eligible,
@@ -62,13 +66,11 @@ class Tools:
         }
 
     def create_return(self, customer_id: str, order_id: str) -> Dict[str, Any]:
-        # Validate order exists
         self.get_order(customer_id, order_id)
         action_id = self.action_log.record_action("create_return", customer_id, {"order_id": order_id})
         return {"status": "success", "action_id": action_id}
 
     def create_refund(self, customer_id: str, order_id: str, amount: float) -> Dict[str, Any]:
-        # Validate order exists
         self.get_order(customer_id, order_id)
         action_id = self.action_log.record_action("create_refund", customer_id, {"order_id": order_id}, {"amount": amount})
         return {"status": "success", "action_id": action_id}
@@ -79,6 +81,7 @@ class Tools:
         return {"status": "success", "action_id": action_id}
 
     def escalate_to_human(self, customer_id: str, order_id: str, team: str, priority: str, reason: str) -> Dict[str, Any]:
-        self.get_order(customer_id, order_id)
+        if order_id:
+            self.get_order(customer_id, order_id)
         action_id = self.action_log.record_action("escalate", customer_id, {"order_id": order_id}, {"team": team, "priority": priority, "reason": reason})
         return {"status": "success", "action_id": action_id}

@@ -8,5 +8,7 @@ def test_load_real_datasets():
     assert len(datasets["customers"]) > 0
     
 def test_missing_demo_datasets():
-    with pytest.raises(DataValidationError):
-        load_datasets(use_demo=True)
+    from unittest.mock import patch
+    with patch('pathlib.Path.exists', return_value=False):
+        with pytest.raises(DataValidationError):
+            load_datasets(use_demo=True)

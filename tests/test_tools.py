@@ -5,11 +5,8 @@ from src.action_log import ActionLog
 from db.dataset_loader import load_datasets
 
 def test_tools():
-    # Use demo data
-    try:
-        datasets = load_datasets(use_demo=True)
-    except Exception as e:
-        pytest.skip(f"Could not load demo datasets: {e}")
+    # Use demo data explicitly instead of skipping
+    datasets = load_datasets(use_demo=True)
         
     log = ActionLog()
     pe = PolicyEngine([
@@ -31,3 +28,7 @@ def test_tools():
     res1 = tools.create_return("C001", "O001")
     res2 = tools.create_return("C001", "O001")
     assert res1["action_id"] == res2["action_id"]
+    
+    # Conversations
+    convos = tools.get_conversations("C001")
+    assert len(convos["conversations"]) >= 1
