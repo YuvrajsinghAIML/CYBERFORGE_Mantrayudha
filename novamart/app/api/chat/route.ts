@@ -4,32 +4,13 @@ import { NextResponse } from 'next/server'
 
 export const maxDuration = 30
 
-const PRODUCT_CATALOG = `
-- Samsung Galaxy S24 Ultra 5G (Electronics): ₹1,29,999
-- Sony WH-1000XM5 Wireless Headphones (Electronics): ₹29,990
-- Apple MacBook Air M3 (Electronics): ₹1,14,900
-- Nike Air Force 1 '07 (Fashion): ₹7,999
-- Levi's 511 Slim Fit Denim (Fashion): ₹2,799
-- Zara Oversized Trench Coat (Fashion): ₹5,990
-- Dyson V12 Detect Slim Vacuum (Home & Living): ₹45,900
-- Philips Hue Smart Light Bar (Home & Living): ₹4,999
-- SleepyCat Memory Foam Mattress (Home & Living): ₹12,499
-- Minimalist 10% Vitamin C Serum (Beauty & Personal Care): ₹649
-- Forest Essentials Radiance Cream (Beauty & Personal Care): ₹3,450
-- Dyson Supersonic Hair Dryer (Beauty & Personal Care): ₹34,900
-- Fitbit Charge 6 Fitness Tracker (Sports & Fitness): ₹12,999
-- Domyos Hex Dumbbells 10kg Pair (Sports & Fitness): ₹3,299
-- Cosco Aerobic Yoga Mat (Sports & Fitness): ₹899
-- Atomic Habits by James Clear (Books & Stationery): ₹499
-- Lamy Safari Fountain Pen (Books & Stationery): ₹2,190
-- Moleskine Dotted Journal (Books & Stationery): ₹1,499
-- LEGO Star Wars Millennium Falcon (Toys & Games): ₹14,999
-- PlayStation 5 DualSense Controller (Toys & Games): ₹5,490
-- Hot Wheels 10-Car Pack (Toys & Games): ₹1,199
-- Tata Sampann Organic Toor Dal 1kg (Groceries): ₹199
-- Blue Tokai Vienna Roast Coffee (Groceries): ₹470
-- Organic India Tulsi Green Tea (Groceries): ₹320
-`
+const google = createGoogleGenerativeAI({
+  apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+})
+
+import { products } from '../../shop/page'
+
+const PRODUCT_CATALOG = products.map((p) => `- ${p.title} (${p.category}): ₹${p.price.toLocaleString('en-IN')}`).join('\n')
 
 const SYSTEM_PROMPT = `You are a helpful NovaMart AI Support Agent. You assist with order tracking, returns, specifications, and products.
 Here is the available product catalog and prices:
