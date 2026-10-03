@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 from typing import List, Optional, Dict, Any
 
 class UnderstandingContract(BaseModel):
@@ -11,6 +11,16 @@ class UnderstandingContract(BaseModel):
     flags: List[str] = Field(default_factory=list)
     evidence_provided: bool = False
     language: str = "en"
+    
+    @model_validator(mode='after')
+    def check_intents(self) -> 'UnderstandingContract':
+        if not self.intents:
+            raise ValueError("Intents list cannot be empty")
+        valid_intents = {"refund", "return", "cancellation", "status", "escalate", "general", "replacement"}
+        for intent in self.intents:
+            if intent not in valid_intents:
+                raise ValueError(f"Invalid intent: {intent}")
+        return self
 
 class TraceContract(BaseModel):
     understanding: UnderstandingContract
