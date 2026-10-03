@@ -1,0 +1,15 @@
+{
+  "graphify": {
+    "enabled": true
+  },
+  "workflow": {
+    "research_enabled": true,
+    "plan_check_enabled": true,
+    "verifier_enabled": true,
+    "auto_branching": true,
+    "code_review_enabled": true,
+    "ui_review_enabled": true,
+    "security_review_enabled": true,
+    "eval_review_enabled": true
+  }
+}
