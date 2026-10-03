@@ -8,7 +8,7 @@ const google = createGoogleGenerativeAI({
   apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
 })
 
-import { products } from '../../shop/page'
+import { products } from '@/lib/products'
 
 const PRODUCT_CATALOG = products.map((p) => `- ${p.title} (${p.category}): ₹${p.price.toLocaleString('en-IN')}`).join('\n')
 
@@ -60,7 +60,7 @@ export async function POST(req: Request) {
     if (process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
       try {
         const google = createGoogleGenerativeAI({ apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY })
-        const modelName = process.env.GEMINI_MODEL || 'gemini-1.5-flash'
+        const modelName = process.env.GEMINI_MODEL || 'gemini-3.8-flash'
 
         if (body.message && body.customer_id) {
           const { text } = await generateText({
