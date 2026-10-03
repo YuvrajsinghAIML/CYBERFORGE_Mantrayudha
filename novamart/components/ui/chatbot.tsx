@@ -8,33 +8,17 @@ import { Send, Bot, User, Loader2 } from 'lucide-react';
 import { useChat } from '@ai-sdk/react';
 
 export default function Chatbot({ children }: { children: React.ReactNode }) {
-  const [messages, setMessages] = useState([
-    { id: 'welcome', role: 'assistant', content: 'Hi there! Welcome to NovaMart Support. How can I help you today?' }
-  ]);
-  const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInput(e.target.value);
-  };
+  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
+    api: '/api/chat',
+    initialMessages: [
+      { id: 'welcome', role: 'assistant', content: 'Hi there! Welcome to NovaMart Support. How can I help you today?' }
+    ]
+  });
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
-    
-    const userMessage = { id: Date.now().toString(), role: 'user', content: input };
-    setMessages(prev => [...prev, userMessage]);
-    setInput('');
-    setIsLoading(true);
-
-    // Mock a response after a short delay
-    setTimeout(() => {
-      setMessages(prev => [
-        ...prev, 
-        { id: Date.now().toString(), role: 'assistant', content: "Thanks for reaching out! We are currently experiencing high volume, but a support agent will be with you shortly. In the meantime, you can track your orders or check our FAQ." }
-      ]);
-      setIsLoading(false);
-    }, 1500);
+    handleSubmit(e);
   };
 
   const scrollRef = useRef<HTMLDivElement>(null);
