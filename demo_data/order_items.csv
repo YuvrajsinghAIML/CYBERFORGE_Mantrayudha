@@ -1,0 +1,5 @@
+order_id,product_id,quantity,price
+O001,P001,1,1000.0
+O002,P002,1,50.0
+O002,P002,1,50.0
+O003,P001,2,1000.0

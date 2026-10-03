@@ -1,0 +1,3 @@
+product_id,name,price,returnable
+P001,Laptop,1000.0,True
+P002,Mouse,50.0,True

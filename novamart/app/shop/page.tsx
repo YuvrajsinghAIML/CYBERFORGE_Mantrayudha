@@ -1,5 +1,7 @@
 'use client'
 
+import { SupportWidget } from '@/components/SupportWidget'
+
 import { useMemo, useState } from 'react'
 import { ArrowRight, BookOpen, ChevronDown, Gamepad2, Heart, Headphones, Laptop, Menu, Search, ShoppingCart, ShieldCheck, Shirt, Smartphone, Star, Tag, Truck, UserRound, Watch, X } from 'lucide-react'
 import Chatbot from '@/components/ui/chatbot'
@@ -48,5 +50,6 @@ export default function Page() {
 
     <section id="deals" className="mx-auto grid max-w-[1440px] gap-3 px-5 pb-16 lg:grid-cols-3 lg:px-12">{[['Great Deals, Every Day', 'Upto 50% off on top brands', Tag], ['Secure Payments', '100% safe and secure', ShieldCheck], ['Easy Returns', '7-day return policy', Truck]].map(([title, text, Icon]) => <div key={title as string} className="flex items-center gap-4 rounded-xl border border-white/10 bg-[#10151c] p-5"><span className="grid size-12 place-items-center rounded-full bg-[#291620] text-[#ff405d]"><Icon className="size-5" /></span><span><strong className="block text-sm">{title as string}</strong><small className="text-xs text-[#8993a5]">{text as string}</small></span><ArrowRight className="ml-auto size-4 text-[#cbd4e5]" /></div>)}</section>
     <footer id="support" className="border-t border-white/10 bg-[#06080c] px-5 py-8 text-center text-xs text-[#737d8d]">© 2026 NovaMart. Shop smart. Live better.</footer>
+      <SupportWidget />
   </main>
 }
