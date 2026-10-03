@@ -6,7 +6,7 @@ from db.dataset_loader import load_datasets
 
 def test_tools():
     # Use demo data explicitly instead of skipping
-    datasets = load_datasets(use_demo=True)
+    datasets = load_datasets()
         
     log = ActionLog()
     pe = PolicyEngine([

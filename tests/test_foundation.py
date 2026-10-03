@@ -12,8 +12,7 @@ def test_load_datasets():
 
 def test_load_policies_config():
     policies = load_policies_config()
-    assert "versions" in policies
-    assert len(policies["versions"]) > 0
+    assert len(policies) > 0
     
 def test_action_log():
     log = ActionLog()

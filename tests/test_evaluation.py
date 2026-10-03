@@ -10,7 +10,7 @@ from db.dataset_loader import load_datasets
 
 @pytest.fixture
 def pipeline():
-    datasets = load_datasets(use_demo=True)
+    datasets = load_datasets()
     log = ActionLog()
     pe = PolicyEngine([
         {"version": "v1", "effective_from": "2020-01-01", "return_window_days": 15, "restocking_fee_percent": 0}

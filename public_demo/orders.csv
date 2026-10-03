@@ -1,4 +1,0 @@
-order_id,customer_id,order_date,status,delivery_status,estimated_delivery,actual_delivery,tracking_number,courier,total_amount
-O001,C001,2026-05-30,delivered,delivered,2026-06-02,2026-06-01,TRK123,FastPost,1000.0
-O002,C002,2026-06-02,processing,in_transit,2026-06-07,,TRK456,Speedy,100.0
-O003,C001,2026-06-05,delivered,delivered,2026-06-08,2026-06-08,TRK789,FastPost,200000.0

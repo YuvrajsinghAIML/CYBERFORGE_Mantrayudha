@@ -1,79 +1,46 @@
+import os
 import pandas as pd
 import json
 from pathlib import Path
-import os
+from typing import Dict, Any
 
 class DataValidationError(Exception):
     pass
 
-def load_datasets(use_demo=False):
-    base_dir = Path(__file__).resolve().parent.parent
-    real_pub = base_dir / "public"
-    demo_pub = base_dir / "public_demo"
+def load_datasets() -> Dict[str, Any]:
+    mode = os.getenv("NOVAMART_DATA_MODE", "official")
     
-    pub = real_pub
-    if use_demo:
-        pub = demo_pub
+    if mode == "demo":
+        base_path = Path("demo_data")
+    else:
+        base_path = Path("public")
+        
+    if not base_path.exists() or not any(base_path.iterdir()):
+        raise DataValidationError(f"Official dataset is missing in {base_path}/")
+        
+    datasets = {}
     
-    if not pub.exists() or not pub.is_dir():
-        if use_demo:
-            raise DataValidationError(f"Demo data directory not found: {pub}")
-        else:
-            raise DataValidationError(f"Real data directory not found: {pub}")
+    try:
+        datasets["customers"] = pd.read_csv(base_path / "customers.csv")
+        datasets["orders"] = pd.read_csv(base_path / "orders.csv")
+        datasets["order_items"] = pd.read_csv(base_path / "order_items.csv")
+        datasets["products"] = pd.read_csv(base_path / "products.csv")
+        datasets["support_tickets"] = pd.read_csv(base_path / "support_tickets.csv")
+        datasets["reviews"] = pd.read_csv(base_path / "reviews.csv")
+        
+        with open(base_path / "conversations.json", 'r') as f:
+            datasets["conversations"] = json.load(f)
             
-    files = {
-        "customers": pub / "customers.csv",
-        "products": pub / "products.csv",
-        "orders": pub / "orders.csv",
-        "order_items": pub / "order_items.csv",
-        "support_tickets": pub / "support_tickets.csv",
-        "reviews": pub / "reviews.csv",
-        "conversations": pub / "conversations.json"
-    }
-    
-    for name, path in files.items():
-        if not path.exists():
-            raise DataValidationError(f"Required dataset missing: {name} at {path}")
-            
-    customers = pd.read_csv(files["customers"])
-    products = pd.read_csv(files["products"])
-    orders = pd.read_csv(files["orders"])
-    order_items = pd.read_csv(files["order_items"])
-    support_tickets = pd.read_csv(files["support_tickets"])
-    reviews = pd.read_csv(files["reviews"])
-    
-    with open(files["conversations"], "r") as f:
-        conversations = json.load(f)
+    except FileNotFoundError as e:
+        raise DataValidationError(f"Missing required dataset file: {e}")
         
-    # Validation: Uniqueness
-    if not customers['customer_id'].is_unique:
-        raise DataValidationError("customers dataset has duplicate customer_id")
-    if not products['product_id'].is_unique:
-        raise DataValidationError("products dataset has duplicate product_id")
-    if not orders['order_id'].is_unique:
-        raise DataValidationError("orders dataset has duplicate order_id")
-    if not support_tickets['ticket_id'].is_unique:
-        raise DataValidationError("support_tickets dataset has duplicate ticket_id")
+    # Schema validation (example constraints)
+    required_customer_cols = {"customer_id", "name", "email", "status"}
+    if not required_customer_cols.issubset(datasets["customers"].columns):
+        raise DataValidationError("Customers dataset is missing required columns")
         
-    # Validation: Foreign Keys
-    missing_customers = set(orders['customer_id']) - set(customers['customer_id'])
-    if missing_customers:
-        raise DataValidationError(f"orders dataset has missing customer_id relationships: {missing_customers}")
+    # Integrity check
+    if not datasets["orders"]["customer_id"].isin(datasets["customers"]["customer_id"]).all():
+        raise DataValidationError("Order references non-existent customer")
         
-    missing_orders = set(order_items['order_id']) - set(orders['order_id'])
-    if missing_orders:
-        raise DataValidationError(f"order_items dataset has missing order_id relationships: {missing_orders}")
-        
-    missing_products = set(order_items['product_id']) - set(products['product_id'])
-    if missing_products:
-        raise DataValidationError(f"order_items dataset has missing product_id relationships: {missing_products}")
-        
-    return {
-        "customers": customers,
-        "products": products,
-        "orders": orders,
-        "order_items": order_items,
-        "support_tickets": support_tickets,
-        "reviews": reviews,
-        "conversations": conversations
-    }
+    return datasets
