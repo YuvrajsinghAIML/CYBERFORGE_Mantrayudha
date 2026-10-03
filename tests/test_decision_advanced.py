@@ -1,3 +1,4 @@
+from tests.conftest import GLOBAL_C001, GLOBAL_C002, GLOBAL_C003, GLOBAL_O001, GLOBAL_O002, GLOBAL_O003, GLOBAL_P001, GLOBAL_T001, GLOBAL_CONV001
 import pytest
 from src.tools import Tools
 from src.policy_engine import PolicyEngine
@@ -22,7 +23,7 @@ def decision_stack():
 
 def test_decider_otp_dispute(decision_stack):
     decider = decision_stack
-    understanding = UnderstandingContract(intents=["refund"], order_id="O001", flags=["not_received"], intent_type="transaction")
-    decisions = decider.decide("C001", understanding)
+    understanding = UnderstandingContract(intents=["refund"], order_id=GLOBAL_O001, flags=["not_received"], intent_type="transaction")
+    decisions = decider.decide(GLOBAL_C001, understanding)
     assert decisions[0]["move"] == "ESCALATE"
     assert decisions[0]["reason_code"] == "OTP_DISPUTE_LOGISTICS"

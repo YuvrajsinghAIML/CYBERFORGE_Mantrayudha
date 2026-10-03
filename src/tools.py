@@ -31,7 +31,21 @@ class Tools:
         prod = df[df["product_id"] == product_id]
         if prod.empty:
             raise ValueError("Product not found")
-        return prod.iloc[0].to_dict()
+        
+        result = prod.iloc[0].to_dict()
+        category = result.get("category", "").lower()
+        
+        import os
+        from pathlib import Path
+        mode = os.getenv("NOVAMART_DATA_MODE", "official")
+        base_path = Path("demo_data/products") if mode == "demo" else Path("public/products")
+        spec_path = base_path / f"{category}.md"
+        
+        if spec_path.exists():
+            with open(spec_path, 'r', encoding='utf-8') as f:
+                result["specification"] = f.read()
+                
+        return result
 
     def get_conversations(self, customer_id: str, order_id: str = None, ticket_id: str = None) -> Dict[str, Any]:
         # Fix: Search conversations by customer_id directly rather than assuming ticket match

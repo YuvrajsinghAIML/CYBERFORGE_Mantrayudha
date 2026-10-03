@@ -1,3 +1,4 @@
+from tests.conftest import GLOBAL_C001, GLOBAL_C002, GLOBAL_C003, GLOBAL_O001, GLOBAL_O002, GLOBAL_O003, GLOBAL_P001, GLOBAL_T001, GLOBAL_CONV001
 import pytest
 from src.tools import Tools
 from src.policy_engine import PolicyEngine
@@ -23,16 +24,16 @@ def decision_stack():
 
 def test_decider_priority_safety(decision_stack):
     _, _, decider, _ = decision_stack
-    understanding = UnderstandingContract(intents=["refund"], order_id="O001", flags=["safety"])
-    decisions = decider.decide("C001", understanding)
+    understanding = UnderstandingContract(intents=["refund"], order_id=GLOBAL_O001, flags=["safety"])
+    decisions = decider.decide(GLOBAL_C001, understanding)
     assert decisions[0]["move"] == "ESCALATE"
     assert decisions[0]["reason_code"] == "safety_or_legal"
 
 def test_decider_priority_suspended(decision_stack):
     _, _, decider, _ = decision_stack
     # C003 is suspended
-    understanding = UnderstandingContract(intents=["refund"], order_id="O001")
-    decisions = decider.decide("C003", understanding)
+    understanding = UnderstandingContract(intents=["refund"], order_id=GLOBAL_O001)
+    decisions = decider.decide(GLOBAL_C003, understanding)
     assert decisions[0]["move"] == "ESCALATE"
     assert decisions[0]["reason_code"] == "ACCOUNT_SUSPENDED"
 
@@ -40,16 +41,16 @@ def test_decider_ambiguity(decision_stack):
     _, _, decider, _ = decision_stack
     # No order_id specified
     understanding = UnderstandingContract(intents=["refund"], intent_type="transaction")
-    decisions = decider.decide("C001", understanding)
+    decisions = decider.decide(GLOBAL_C001, understanding)
     assert decisions[0]["move"] == "ASK"
     assert decisions[0]["reason_code"] == "missing_or_ambiguous_info"
 
 def test_guardrail(decision_stack):
     tools, _, _, guardrail = decision_stack
-    understanding = UnderstandingContract(intents=["refund"], order_id="O001")
+    understanding = UnderstandingContract(intents=["refund"], order_id=GLOBAL_O001)
     decision = {"move": "ACT"}
-    valid, msg = guardrail.validate_action("C001", "create_refund", {"order_id": "O001"}, understanding, decision)
+    valid, msg = guardrail.validate_action(GLOBAL_C001, "create_refund", {"order_id": GLOBAL_O001}, understanding, decision)
     assert valid is True
     
-    valid, msg = guardrail.validate_action("C002", "create_refund", {"order_id": "O001"}, understanding, decision)
+    valid, msg = guardrail.validate_action(GLOBAL_C002, "create_refund", {"order_id": GLOBAL_O001}, understanding, decision)
     assert valid is False

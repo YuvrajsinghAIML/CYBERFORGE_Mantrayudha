@@ -1,3 +1,4 @@
+from tests.conftest import GLOBAL_C001, GLOBAL_C002, GLOBAL_C003, GLOBAL_O001, GLOBAL_O002, GLOBAL_O003, GLOBAL_P001, GLOBAL_T001, GLOBAL_CONV001
 import pytest
 from db.dataset_loader import load_datasets, DataValidationError
 

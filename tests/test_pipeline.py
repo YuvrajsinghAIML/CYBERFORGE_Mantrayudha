@@ -1,3 +1,4 @@
+from tests.conftest import GLOBAL_C001, GLOBAL_C002, GLOBAL_C003, GLOBAL_O001, GLOBAL_O002, GLOBAL_O003, GLOBAL_P001, GLOBAL_T001, GLOBAL_CONV001
 import pytest
 from src.tools import Tools
 from src.policy_engine import PolicyEngine
@@ -22,16 +23,16 @@ def pipeline():
     return Pipeline(tools, verifier, pe, decider, guardrail)
 
 def test_pipeline_ask(pipeline):
-    reply, decisions, trace, session = pipeline.handle_message("C001", "I need a refund", "2026-06-10")
+    reply, decisions, trace, session = pipeline.handle_message(GLOBAL_C001, "I need a refund", "2026-06-10")
     assert decisions[0]["move"] == "ASK"
     assert session.pending == "need_info"
 
 def test_pipeline_act_with_memory(pipeline):
     # First turn
-    reply, decisions, trace, session = pipeline.handle_message("C001", "I need a refund", "2026-06-10")
+    reply, decisions, trace, session = pipeline.handle_message(GLOBAL_C001, "I need a refund", "2026-06-10")
     assert decisions[0]["move"] == "ASK"
     
     # Second turn
-    reply, decisions, trace, session = pipeline.handle_message("C001", "refund for order O001", "2026-06-10", session)
-    assert trace.understanding.order_id == "O001"
+    reply, decisions, trace, session = pipeline.handle_message(GLOBAL_C001, f"refund for order {GLOBAL_O001}", "2026-06-10", session)
+    assert trace.understanding.order_id == GLOBAL_O001
     assert decisions[0]["move"] == "ACT"
