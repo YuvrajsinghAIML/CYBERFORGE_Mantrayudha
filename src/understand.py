@@ -1,25 +1,22 @@
 import json
 from src.contracts import UnderstandingContract
+from src.provider import LLMProvider
+from pydantic import ValidationError
 
 class LLMUnderstander:
-    def __init__(self, llm_client=None):
-        self.llm = llm_client
+    def __init__(self, provider: LLMProvider):
+        self.provider = provider
         
-    def understand(self, message, session, retries=1):
-        if self.llm:
-            # Fake LLM logic for tests
-            return self.llm.call_understanding(message, session)
-            
-        # Fallback heuristic for tests
-        intents = ["general"]
-        if "refund" in message.lower():
-            intents = ["refund"]
-        order_id = None
-        if "ORD-" in message:
-            start = message.find("ORD-")
-            order_id = message[start:start+10] # O001 is not ORD- format, let's fix
-        if "O00" in message:
-            start = message.find("O00")
-            order_id = message[start:start+4]
-            
-        return UnderstandingContract(intents=intents, order_id=order_id, intent_type="transaction" if "refund" in intents else "general")
+    def understand(self, message, session, retries=1) -> UnderstandingContract:
+        # 1 call logic with 1 retry
+        for attempt in range(retries + 1):
+            try:
+                raw_result = self.provider.call(message, "SYSTEM_PROMPT")
+                # Parse and validate with Pydantic
+                contract = UnderstandingContract(**raw_result)
+                return contract
+            except ValidationError:
+                if attempt == retries:
+                    # Deterministic fallback on total failure
+                    return UnderstandingContract(intents=["general"], flags=["understanding_failed"])
+        return UnderstandingContract(intents=["general"], flags=["understanding_failed"])

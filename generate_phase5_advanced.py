@@ -1,3 +1,10 @@
+import os
+
+def write_file(path, content):
+    with open(path, 'w', encoding='utf-8') as f:
+        f.write(content.strip() + '\n')
+
+write_file('src/decision/verify.py', """
 class Verifier:
     def __init__(self, tools):
         self.tools = tools
@@ -45,3 +52,4 @@ class Verifier:
             results["is_ambiguous"] = True
             
         return results
+""")

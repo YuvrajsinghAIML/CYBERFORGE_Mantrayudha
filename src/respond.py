@@ -1,12 +1,15 @@
+from src.provider import LLMProvider
+
 class LLMResponder:
-    def __init__(self, llm_client=None):
-        self.llm = llm_client
+    def __init__(self, provider: LLMProvider):
+        self.provider = provider
         
     def respond(self, decisions, results, session):
-        if self.llm:
-            return self.llm.call_respond(decisions, results, session)
-        
         move = decisions[0]["move"]
+        
+        # Real LLM call for generation would happen here using provider.
+        # It must only receive limited context: request, verified facts, policy result, final decision, tools.
+        
         if move == "ANSWER":
             return "Here is the information you requested."
         elif move == "ASK":
