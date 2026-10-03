@@ -1,51 +1,9 @@
-'use client'
+import AgencyHeroSection from "@/components/ui/hero-01";
 
-import { useMemo, useState } from 'react'
-import { ArrowRight, BookOpen, ChevronDown, Gamepad2, Heart, Headphones, Laptop, Menu, Search, ShoppingCart, ShieldCheck, Shirt, Smartphone, Star, Tag, Truck, UserRound, Watch, X } from 'lucide-react'
-
-type Product = { id: number; name: string; category: string; price: number; oldPrice: number; rating: number; reviews: string; image: string; tag: string }
-
-const heroImage = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/WhatsApp%20Image%202026-10-03%20at%201.18.50%20PM-8aaRHgjOONomxenEzhSPiSQeNgCd4V.jpeg'
-
-const products: Product[] = [
-  { id: 1, name: 'Lenovo IdeaPad Slim 5', category: 'Electronics', price: 58990, oldPrice: 72990, rating: 4.5, reviews: '1.2K', image: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=800&q=90', tag: 'Bestseller' },
-  { id: 2, name: 'boAt Airdopes 141', category: 'Electronics', price: 1299, oldPrice: 2499, rating: 4.3, reviews: '3.4K', image: 'https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?auto=format&fit=crop&w=800&q=90', tag: 'New' },
-  { id: 3, name: 'Noise ColorFit Pro 5', category: 'Electronics', price: 2999, oldPrice: 4999, rating: 4.4, reviews: '2.1K', image: 'https://images.unsplash.com/photo-1544117519-31a4b719223d?auto=format&fit=crop&w=800&q=90', tag: 'Trending' },
-  { id: 4, name: 'Nike Air Force 1', category: 'Fashion', price: 7999, oldPrice: 9995, rating: 4.6, reviews: '3.8K', image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=90', tag: '' },
-  { id: 5, name: 'Skybags Crew Backpack', category: 'Fashion', price: 1899, oldPrice: 2999, rating: 4.4, reviews: '1.6K', image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=90', tag: '' },
-  { id: 6, name: 'Apple iPhone 15', category: 'Electronics', price: 69900, oldPrice: 79900, rating: 4.7, reviews: '4.2K', image: 'https://images.unsplash.com/photo-1592286927505-2fd9d7f08f7b?auto=format&fit=crop&w=800&q=90', tag: '' },
-]
-
-const categories = [
-  ['Electronics', Laptop], ['Fashion', Shirt], ['Home & Living', Watch], ['Beauty & Personal Care', Tag], ['Sports & Fitness', Watch], ['Books & Stationery', BookOpen], ['Toys & Games', Gamepad2], ['Groceries', ShoppingCart],
-] as const
-
-function formatPrice(value: number) { return `₹${value.toLocaleString('en-IN')}` }
-
-export default function Page() {
-  const [query, setQuery] = useState('')
-  const [cart, setCart] = useState<Product[]>([])
-  const [liked, setLiked] = useState<number[]>([])
-  const [menuOpen, setMenuOpen] = useState(false)
-  const filtered = useMemo(() => products.filter((p) => p.name.toLowerCase().includes(query.toLowerCase())), [query])
-
-  return <main className="min-h-screen bg-[#080b10] text-[#f5f7fb]">
-    <header className="sticky top-0 z-40 border-b border-white/10 bg-[#080b10]/95 backdrop-blur-xl">
-      <div className="mx-auto flex h-[70px] max-w-[1440px] items-center gap-6 px-5 lg:px-12">
-        <button className="lg:hidden" aria-label="Open menu" onClick={() => setMenuOpen(!menuOpen)}><Menu /></button>
-        <a href="#top" className="flex items-center gap-3"><span className="grid size-10 rotate-[-8deg] place-items-center rounded-xl bg-[#ff2748] text-xl font-black text-[#080b10]">N</span><span><strong className="text-2xl tracking-[-0.06em]">Nova<span className="text-[#ff2748]">Mart</span></strong><small className="block text-[10px] tracking-wide text-[#9da5b5]">Shop Smart. Live Better.</small></span></a>
-        <nav className="ml-10 hidden items-center gap-9 text-sm text-[#b7bfce] lg:flex"><a className="border-b-2 border-[#ff2748] py-6 text-[#ff4260]" href="#top">Home</a><a href="#products">Products</a><a href="#categories">Categories</a><a href="#deals">Deals</a><a href="#orders">Orders</a><a href="#support">Support</a></nav>
-        <div className="ml-auto flex items-center gap-5"><label className="hidden items-center gap-3 rounded-xl border border-white/10 bg-[#111720] px-4 py-2.5 md:flex"><Search className="size-4 text-[#aab3c3]" /><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search for products..." aria-label="Search for products" className="w-52 bg-transparent text-sm outline-none placeholder:text-[#8993a5]" /></label><button aria-label="Wishlist" className="hidden text-[#cbd4e5] sm:block"><Heart /></button><button aria-label="Shopping cart" onClick={() => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })} className="relative text-[#cbd4e5]"><ShoppingCart /><span className="absolute -right-2 -top-2 grid size-4 place-items-center rounded-full bg-[#ff2748] text-[10px]">{cart.length}</span></button><button aria-label="Account" className="grid size-9 place-items-center rounded-full bg-[#e7edff] font-semibold text-[#0a0e16]">S</button><ChevronDown className="hidden size-4 sm:block" /></div>
-      </div>{menuOpen && <nav className="flex flex-col gap-5 border-t border-white/10 px-5 py-5 text-sm text-[#cbd4e5] lg:hidden"><a href="#products">Products</a><a href="#categories">Categories</a><a href="#deals">Deals</a><a href="#support">Support</a></nav>}
-    </header>
-
-    <section id="top" className="relative min-h-[470px] overflow-hidden border-b border-white/10 bg-[#0b0e14] bg-cover bg-center" style={{ backgroundImage: `linear-gradient(90deg, rgba(7,10,15,.98) 0%, rgba(7,10,15,.86) 38%, rgba(7,10,15,.18) 76%, rgba(7,10,15,.48)), url(${heroImage})` }}><div className="mx-auto flex max-w-[1440px] items-center px-5 py-20 lg:px-12 lg:py-24"><div className="max-w-[640px]"><div className="mb-6 flex items-center gap-4 text-xs uppercase tracking-[0.3em] text-[#9ba5b7]"><span className="h-0.5 w-10 bg-[#ff2748]" /> NovaMart</div><h1 className="text-5xl font-black leading-[.98] tracking-[-.06em] sm:text-7xl">Everything You Need,<br /><span className="text-[#ff2748]">Right Here.</span></h1><p className="mt-5 max-w-lg text-lg leading-7 text-[#b8c0ce]">Explore a wide range of products with fast delivery, easy returns and reliable support.</p><div className="mt-8 flex flex-wrap gap-3"><a href="#products" className="rounded-lg bg-[#ff2748] px-8 py-3.5 text-sm font-bold shadow-[0_10px_30px_rgba(255,39,72,.22)] transition hover:bg-[#ff4c68]">Shop Now <ArrowRight className="ml-2 inline size-4" /></a><a href="#deals" className="rounded-lg border border-white/20 px-8 py-3.5 text-sm font-semibold text-[#dbe2ee] hover:border-[#ff2748]">View Deals</a></div><div className="mt-8 flex flex-wrap gap-7 text-sm"><span><Truck className="mr-2 inline text-[#ff2748]" /> Fast Delivery <small className="ml-1 text-[#8993a5]">Across India</small></span><span><ShieldCheck className="mr-2 inline text-[#ff2748]" /> Easy Returns <small className="ml-1 text-[#8993a5]">Hassle Free</small></span><span><Headphones className="mr-2 inline text-[#ff2748]" /> 24x7 Support</span></div></div></div></section>
-
-    <section id="categories" className="mx-auto max-w-[1440px] overflow-x-auto px-5 py-4 lg:px-12"><div className="flex min-w-[980px] gap-3">{categories.map(([name, Icon], i) => <a href="#products" key={name} className={`flex min-w-[145px] flex-1 flex-col items-center justify-center gap-2 rounded-xl border px-3 py-4 text-center text-xs text-[#dbe2ee] transition ${i === 0 ? 'border-[#ff2748] bg-[#191119] text-white' : 'border-white/10 bg-[#10151c] hover:border-[#ff2748]'}`}><Icon className={`size-6 ${i === 0 ? 'text-[#ff5069]' : 'text-[#b9c5d9'}`} /><span>{name}</span></a>)}</div></section>
-
-    <section id="products" className="mx-auto max-w-[1440px] px-5 pb-16 pt-5 lg:px-12"><div className="mb-5 flex items-end justify-between"><div><h2 className="text-2xl font-black uppercase tracking-tight">Trending <span className="text-[#ff2748]">Products</span></h2><p className="text-sm text-[#8993a5]">Most loved products from NovaMart</p></div><a href="#products" className="rounded-lg border border-white/15 px-4 py-2 text-xs text-[#dbe2ee]">View All <ArrowRight className="ml-1 inline size-3 text-[#ff2748]" /></a></div><div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">{filtered.map((p) => <article key={p.id} className="group rounded-xl border border-white/10 bg-[#10151c] p-2.5 transition hover:-translate-y-1 hover:border-[#ff2748]/60"><div className="relative aspect-square overflow-hidden rounded-lg bg-[#171d26]"><img src={p.image} alt={p.name} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />{p.tag && <span className="absolute left-2 top-2 rounded-full bg-[#ff2748] px-2 py-1 text-[9px] font-bold">{p.tag}</span>}<button aria-label={`Wishlist ${p.name}`} onClick={() => setLiked((v) => v.includes(p.id) ? v.filter((id) => id !== p.id) : [...v, p.id])} className="absolute right-2 top-2 text-white"><Heart className="size-4" fill={liked.includes(p.id) ? '#ff2748' : 'none'} color={liked.includes(p.id) ? '#ff2748' : 'currentColor'} /></button></div><h3 className="mt-3 truncate text-sm font-semibold">{p.name}</h3><p className="mt-1 truncate text-xs text-[#8d98aa]">{p.category}</p><div className="mt-2 flex items-center gap-1 text-xs"><Star className="size-3 fill-[#ffd33d] text-[#ffd33d]" /> {p.rating} <span className="text-[#8791a2]">({p.reviews})</span></div><div className="mt-2 flex items-center gap-2"><strong>{formatPrice(p.price)}</strong><del className="text-[10px] text-[#737d8d]">{formatPrice(p.oldPrice)}</del></div><button onClick={() => setCart((v) => [...v, p])} className="mt-3 w-full rounded-md bg-[#ff2748] py-2.5 text-xs font-bold transition hover:bg-[#ff4c68]"><ShoppingCart className="mr-1 inline size-3" /> Add to Cart</button></article>)}</div></section>
-
-    <section id="deals" className="mx-auto grid max-w-[1440px] gap-3 px-5 pb-16 lg:grid-cols-3 lg:px-12">{[['Great Deals, Every Day', 'Upto 50% off on top brands', Tag], ['Secure Payments', '100% safe and secure', ShieldCheck], ['Easy Returns', '7-day return policy', Truck]].map(([title, text, Icon]) => <div key={title as string} className="flex items-center gap-4 rounded-xl border border-white/10 bg-[#10151c] p-5"><span className="grid size-12 place-items-center rounded-full bg-[#291620] text-[#ff405d]"><Icon className="size-5" /></span><span><strong className="block text-sm">{title as string}</strong><small className="text-xs text-[#8993a5]">{text as string}</small></span><ArrowRight className="ml-auto size-4 text-[#cbd4e5]" /></div>)}</section>
-    <footer id="support" className="border-t border-white/10 bg-[#06080c] px-5 py-8 text-center text-xs text-[#737d8d]">© 2026 NovaMart. Shop smart. Live better.</footer>
-  </main>
+export default function Home() {
+  return (
+    <div className="bg-[#0a0a0a] min-h-screen text-white">
+      <AgencyHeroSection />
+    </div>
+  );
 }
