@@ -1,0 +1,5 @@
+versions:
+  - version: "v3"
+    effective_from: "2027-01-01"
+    return_window_days: 45
+    restocking_fee_percent: 5

@@ -1,0 +1,2 @@
+ticket_id,customer_id,order_id,status
+T001,C001,O001,open
