@@ -1,15 +1,31 @@
 import { NextResponse } from 'next/server'
 
+export const maxDuration = 30
+
 export async function POST(req: Request) {
   try {
     const body = await req.json()
     const backendUrl = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8080'
-    
+
+    // Extract message from either { message: '...' } or { messages: [...] }
+    let rawMessage = ''
+    if (typeof body.message === 'string') {
+      rawMessage = body.message
+    } else if (Array.isArray(body.messages) && body.messages.length > 0) {
+      const last = body.messages[body.messages.length - 1]
+      rawMessage = typeof last === 'string' ? last : (last?.content || '')
+    }
+
+    // Try forwarding to authoritative Python backend
     try {
       const response = await fetch(`${backendUrl}/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+        body: JSON.stringify({
+          customer_id: body.customer_id || 'CUST-00001',
+          message: rawMessage,
+          current_date: body.current_date || '2026-06-10'
+        }),
         signal: AbortSignal.timeout(5000),
       })
       if (response.ok) {
@@ -17,12 +33,11 @@ export async function POST(req: Request) {
         return NextResponse.json(data)
       }
     } catch {
-      // Standalone Vercel preview fallback
+      // Backend not running, execute deterministic fallback
     }
 
-    const message = body.message || ''
-    const msgLower = message.toLowerCase()
-    const orderMatch = message.match(/ORD-\d{6}/i)
+    const msgLower = rawMessage.toLowerCase()
+    const orderMatch = rawMessage.match(/ORD-\d{6}/i)
     const detectedOrder = orderMatch ? orderMatch[0].toUpperCase() : null
 
     let move = 'ANSWER'
@@ -117,7 +132,7 @@ export async function POST(req: Request) {
           intents: [intent],
           detected_order: detectedOrder,
           security_flags: flags,
-          raw_message: message
+          raw_message: rawMessage
         },
         verification: {
           customer_status: 'active',
