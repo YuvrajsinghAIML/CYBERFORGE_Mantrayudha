@@ -2,12 +2,10 @@
 
 import { useMemo, useState } from 'react'
 import { 
-  ArrowRight, BookOpen, ChevronDown, Gamepad2, Heart, Headphones, 
-  Laptop, Menu, Search, ShoppingCart, ShieldCheck, Shirt, Star, 
-  Tag, Truck, Watch, X, Sparkles, Check, Filter, Utensils
+  ArrowRight, BookOpen, Check, Filter, Gamepad2, Heart, 
+  Laptop, Search, ShoppingCart, Shirt, Sparkles, Star, Tag, 
+  Truck, Watch, X, ShieldCheck
 } from 'lucide-react'
-import Chatbot from '@/components/ui/chatbot'
-import { SupportWidget } from '@/components/SupportWidget'
 
 export type Product = {
   id: number
@@ -23,8 +21,6 @@ export type Product = {
   badge?: string
   tag?: string
 }
-
-const heroImage = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/WhatsApp%20Image%202026-10-03%20at%201.18.50%20PM-8aaRHgjOONomxenEzhSPiSQeNgCd4V.jpeg'
 
 export const products: Product[] = [
   // 1. Electronics (3 items)
@@ -380,7 +376,7 @@ export const products: Product[] = [
   }
 ]
 
-const categories = [
+export const categories = [
   ['Electronics', Laptop], 
   ['Fashion', Shirt], 
   ['Home & Living', Watch], 
@@ -395,12 +391,11 @@ function formatPrice(value: number) {
   return `₹${value.toLocaleString('en-IN')}` 
 }
 
-export default function ShopPage() {
+export function ProductSection() {
   const [query, setQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string>('All')
   const [cart, setCart] = useState<Product[]>([])
   const [liked, setLiked] = useState<number[]>([])
-  const [menuOpen, setMenuOpen] = useState(false)
   const [addedNotice, setAddedNotice] = useState<string | null>(null)
 
   const filtered = useMemo(() => {
@@ -431,7 +426,7 @@ export default function ShopPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#080b10] text-[#f5f7fb]">
+    <section className="w-full bg-[#080b10] text-[#f5f7fb] py-12 border-t border-white/5">
       {/* Added to Cart Notification Toast */}
       {addedNotice && (
         <div className="fixed top-20 right-6 z-50 flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-950/90 px-4 py-3 text-xs font-semibold text-emerald-300 shadow-2xl backdrop-blur-md animate-in fade-in slide-in-from-top-3">
@@ -440,143 +435,8 @@ export default function ShopPage() {
         </div>
       )}
 
-      {/* Main Header */}
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-[#080b10]/95 backdrop-blur-xl">
-        <div className="mx-auto flex h-[70px] max-w-[1440px] items-center gap-6 px-5 lg:px-12">
-          <button className="lg:hidden" aria-label="Open menu" onClick={() => setMenuOpen(!menuOpen)}>
-            <Menu />
-          </button>
-          
-          <a href="/" className="flex items-center gap-3">
-            <span className="grid size-10 rotate-[-8deg] place-items-center rounded-xl bg-[#ff2748] text-xl font-black text-[#080b10]">N</span>
-            <span>
-              <strong className="text-2xl tracking-[-0.06em]">Nova<span className="text-[#ff2748]">Mart</span></strong>
-              <small className="block text-[10px] tracking-wide text-[#9da5b5]">Shop Smart. Live Better.</small>
-            </span>
-          </a>
-
-          {/* Navigation Links with Category Selection */}
-          <nav className="ml-8 hidden items-center gap-6 text-sm text-[#b7bfce] lg:flex">
-            <a className="py-6 text-white hover:text-[#ff4260] transition-colors" href="/">Home</a>
-            <button 
-              onClick={() => { setSelectedCategory('All'); setQuery('') }}
-              className={`py-6 font-medium transition-colors ${selectedCategory === 'All' ? 'border-b-2 border-[#ff2748] text-[#ff4260]' : 'hover:text-white'}`}
-            >
-              All Products
-            </button>
-            <a href="#categories" className="hover:text-white transition-colors">Categories</a>
-            <a href="#deals" className="hover:text-white transition-colors">Deals</a>
-            <Chatbot>
-              <button className="flex items-center gap-1.5 font-semibold text-[#ff4260] hover:text-[#ff2748] transition-colors">
-                <Sparkles className="size-4" /> AI Support
-              </button>
-            </Chatbot>
-          </nav>
-
-          {/* Search & Actions */}
-          <div className="ml-auto flex items-center gap-4">
-            <label className="hidden items-center gap-3 rounded-xl border border-white/10 bg-[#111720] px-4 py-2.5 md:flex focus-within:border-[#ff2748]/60 transition-colors">
-              <Search className="size-4 text-[#aab3c3]" />
-              <input 
-                value={query} 
-                onChange={(e) => setQuery(e.target.value)} 
-                placeholder="Search products or categories..." 
-                aria-label="Search for products" 
-                className="w-56 bg-transparent text-sm outline-none placeholder:text-[#8993a5]" 
-              />
-              {query && (
-                <button onClick={() => setQuery('')} className="text-xs text-zinc-500 hover:text-white">
-                  <X className="size-3.5" />
-                </button>
-              )}
-            </label>
-
-            <button 
-              aria-label="Wishlist" 
-              className="relative hidden text-[#cbd4e5] hover:text-white transition-colors sm:block"
-            >
-              <Heart className="size-5" />
-              {liked.length > 0 && (
-                <span className="absolute -right-2 -top-2 grid size-4 place-items-center rounded-full bg-[#ff2748] text-[10px] font-bold text-white">
-                  {liked.length}
-                </span>
-              )}
-            </button>
-
-            <button 
-              aria-label="Shopping cart" 
-              onClick={() => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })} 
-              className="relative text-[#cbd4e5] hover:text-white transition-colors"
-            >
-              <ShoppingCart className="size-5" />
-              <span className="absolute -right-2 -top-2 grid size-4 place-items-center rounded-full bg-[#ff2748] text-[10px] font-bold text-white">
-                {cart.length}
-              </span>
-            </button>
-
-            <button aria-label="Account" className="grid size-9 place-items-center rounded-full bg-[#e7edff] font-semibold text-[#0a0e16]">
-              S
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Navigation Drawer */}
-        {menuOpen && (
-          <nav className="flex flex-col gap-4 border-t border-white/10 px-5 py-5 text-sm text-[#cbd4e5] lg:hidden bg-[#0d1118]">
-            <a href="/" className="hover:text-white">Home</a>
-            <button 
-              onClick={() => { setSelectedCategory('All'); setMenuOpen(false) }} 
-              className="text-left hover:text-white"
-            >
-              All Products
-            </button>
-            <a href="#categories" onClick={() => setMenuOpen(false)} className="hover:text-white">Categories</a>
-            <a href="#deals" onClick={() => setMenuOpen(false)} className="hover:text-white">Deals</a>
-            <Chatbot>
-              <button className="text-left font-semibold text-[#ff4260] w-full">AI Support</button>
-            </Chatbot>
-          </nav>
-        )}
-      </header>
-
-      {/* Hero Banner */}
-      <section 
-        id="top" 
-        className="relative min-h-[420px] overflow-hidden border-b border-white/10 bg-[#0b0e14] bg-cover bg-center" 
-        style={{ backgroundImage: `linear-gradient(90deg, rgba(7,10,15,.98) 0%, rgba(7,10,15,.88) 42%, rgba(7,10,15,.25) 78%, rgba(7,10,15,.55)), url(${heroImage})` }}
-      >
-        <div className="mx-auto flex max-w-[1440px] items-center px-5 py-16 lg:px-12 lg:py-20">
-          <div className="max-w-[640px]">
-            <div className="mb-4 flex items-center gap-3 text-xs uppercase tracking-[0.3em] text-[#9ba5b7]">
-              <span className="h-0.5 w-8 bg-[#ff2748]" /> NovaMart Storefront
-            </div>
-            <h1 className="text-4xl font-black leading-[1.02] tracking-[-.05em] sm:text-6xl">
-              24 Verified Products.<br />
-              <span className="text-[#ff2748]">8 Complete Categories.</span>
-            </h1>
-            <p className="mt-4 max-w-lg text-base leading-relaxed text-[#b8c0ce]">
-              Browse authentic products with lightning-fast delivery, 7-day hassle-free returns, and agentic AI customer protection.
-            </p>
-            <div className="mt-7 flex flex-wrap items-center gap-3">
-              <a 
-                href="#products" 
-                className="rounded-xl bg-[#ff2748] px-7 py-3 text-sm font-bold shadow-[0_10px_30px_rgba(255,39,72,.28)] transition-all hover:bg-[#d91936] hover:scale-105 active:scale-95"
-              >
-                Explore Collection <ArrowRight className="ml-2 inline size-4" />
-              </a>
-              <button 
-                onClick={() => setSelectedCategory('All')} 
-                className="rounded-xl border border-white/20 bg-white/5 px-6 py-3 text-sm font-semibold text-[#dbe2ee] transition hover:border-[#ff2748] hover:text-white"
-              >
-                Reset Filter ({selectedCategory})
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Categories Bar / Quick Filter */}
-      <section id="categories" className="mx-auto max-w-[1440px] px-5 py-8 lg:px-12 border-b border-white/5">
+      <div id="categories" className="mx-auto max-w-[1440px] px-5 pb-8 lg:px-12 border-b border-white/5">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <Filter className="size-4 text-[#ff2748]" />
@@ -627,11 +487,11 @@ export default function ShopPage() {
             )
           })}
         </div>
-      </section>
+      </div>
 
       {/* TRENDING PRODUCTS GRID */}
-      <section id="products" className="mx-auto max-w-[1440px] px-5 py-12 lg:px-12">
-        <div className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+      <div id="products" className="mx-auto max-w-[1440px] px-5 pt-8 lg:px-12">
+        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#ff2748]">
               <span>Curated Selection</span>
@@ -645,8 +505,16 @@ export default function ShopPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="text-xs text-[#8993a5]">Active Category:</span>
-            <span className="rounded-lg border border-white/10 bg-[#171d26] px-3 py-1 text-xs font-bold text-white">
+            <label className="flex items-center gap-2 rounded-xl border border-white/10 bg-[#111720] px-3.5 py-2 text-xs text-[#aab3c3] focus-within:border-[#ff2748]/60 transition-colors">
+              <Search className="size-3.5" />
+              <input 
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search items..."
+                className="w-40 bg-transparent text-xs text-white outline-none placeholder:text-[#8993a5]"
+              />
+            </label>
+            <span className="rounded-lg border border-white/10 bg-[#171d26] px-3 py-2 text-xs font-bold text-white">
               {selectedCategory}
             </span>
           </div>
@@ -744,10 +612,10 @@ export default function ShopPage() {
             })}
           </div>
         )}
-      </section>
+      </div>
 
-      {/* Trust & Guarantee Banners */}
-      <section id="deals" className="mx-auto grid max-w-[1440px] gap-4 px-5 pb-16 lg:grid-cols-3 lg:px-12">
+      {/* Trust Badges */}
+      <div id="deals" className="mx-auto grid max-w-[1440px] gap-4 px-5 pt-16 lg:grid-cols-3 lg:px-12">
         {[
           ['Great Deals, Every Day', 'Upto 50% off on top brands', Tag],
           ['Secure Payments', '100% safe UPI, Cards & NetBanking', ShieldCheck],
@@ -764,15 +632,7 @@ export default function ShopPage() {
             <ArrowRight className="ml-auto size-4 text-[#8993a5]" />
           </div>
         ))}
-      </section>
-
-      {/* Footer */}
-      <footer id="support" className="border-t border-white/10 bg-[#06080c] px-5 py-8 text-center text-xs text-[#737d8d]">
-        © 2026 NovaMart Inc. Official Hackathon Storefront • 8 Categories • 24 Verified Products.
-      </footer>
-
-      {/* Full 4-Tab AI Support Suite */}
-      <SupportWidget />
-    </main>
+      </div>
+    </section>
   )
 }
