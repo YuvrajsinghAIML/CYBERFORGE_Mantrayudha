@@ -5,47 +5,20 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Send, Bot, User, Loader2 } from 'lucide-react';
+import { useChat } from '@ai-sdk/react';
 
 export default function Chatbot({ children }: { children: React.ReactNode }) {
-  const [messages, setMessages] = useState([
-    { id: 'welcome', role: 'assistant', content: 'Hi there! Welcome to NovaMart Support. How can I help you today?' }
-  ]);
-  const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
+    api: '/api/chat',
+    initialMessages: [
+      { id: 'welcome', role: 'assistant', content: 'Hi there! Welcome to NovaMart Support. How can I help you today?' }
+    ]
+  });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInput(e.target.value);
-  };
-
-  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
-    
-    const userMessage = { id: Date.now().toString(), role: 'user', content: input };
-    const query = input;
-    setMessages(prev => [...prev, userMessage]);
-    setInput('');
-    setIsLoading(true);
-
-    try {
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: query, customer_id: 'CUST-00001' })
-      });
-      const data = await res.json();
-      setMessages(prev => [
-        ...prev, 
-        { id: Date.now().toString(), role: 'assistant', content: data.reply || "I have received your request." }
-      ]);
-    } catch {
-      setMessages(prev => [
-        ...prev, 
-        { id: Date.now().toString(), role: 'assistant', content: "Your request has been verified and processed under NovaMart policy." }
-      ]);
-    } finally {
-      setIsLoading(false);
-    }
+    handleSubmit(e);
   };
 
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -95,13 +68,13 @@ export default function Chatbot({ children }: { children: React.ReactNode }) {
               )}
             </div>
           ))}
-          {isLoading && (
+          {isLoading && messages[messages.length - 1]?.role === 'user' && (
             <div className="flex gap-3 justify-start">
               <div className="w-8 h-8 rounded-full bg-[#ff2748]/20 flex items-center justify-center flex-shrink-0 mt-1">
                 <Bot className="w-4 h-4 text-[#ff2748]" />
               </div>
               <div className="px-4 py-3 rounded-2xl max-w-[80%] text-sm leading-relaxed bg-white/5 text-[#dbe2ee] border border-white/10 rounded-bl-none flex items-center gap-2">
-                <Loader2 className="w-4 h-4 animate-spin text-[#ff2748]" /> Verifying policy & data...
+                <Loader2 className="w-4 h-4 animate-spin text-[#ff2748]" /> Thinking...
               </div>
             </div>
           )}
@@ -115,7 +88,7 @@ export default function Chatbot({ children }: { children: React.ReactNode }) {
             <Input 
               value={input}
               onChange={handleInputChange}
-              placeholder="Ask about orders, returns, warranty..." 
+              placeholder="Type your message..." 
               className="bg-[#171d26] border-white/10 text-white placeholder:text-[#8993a5] focus-visible:ring-[#ff2748] pr-12 rounded-xl h-12"
               disabled={isLoading}
             />
