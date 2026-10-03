@@ -378,6 +378,7 @@ export const products: Product[] = [
     badge: '',
     tag: ''
   }
+
 ]
 
 const categories = [
